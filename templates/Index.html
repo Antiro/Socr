@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <script src="https://unpkg.com/vue"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link type="text/css" href="{{ url_for('static', filename='css/style.css')}}" rel="stylesheet" />
+
+    <title>{{title}}</title>
+</head>
+
+<body>
+
+    <div class="topic" id="topic">
+        <div @click="dark" v-if="Vis"><img src="{{ url_for('static', filename='img/dark.png')}}" draggable="false"></div>
+        <div @click="light" v-if="Scr"><img src="{{ url_for('static', filename='img/light.png')}}" draggable="false"></div>
+    </div>
+
+    <div class="divBody">
+        <h2>Публичные ссылки</h2>
+        <div>
+            <!-- {{urlAll}} -->
+            {% for url in urlAll %}
+              <p>id -{{url[0]}} <a href='{{url[1]}}'>{{url[1]}}</a></p>
+            {% endfor %}
+        </div>
+        <a href=""></a>
+    </div>
+
+    <script src="{{url_for('static', filename='js/Vue.js')}}"></script>
+</body>
+
+</html>

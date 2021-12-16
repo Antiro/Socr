@@ -1,3 +1,4 @@
+from flask import Flask, request, render_template
 import pyshorteners
 import sqlite3
 import hashlib
@@ -61,62 +62,66 @@ def exit(id):
 
 # добавление публичной ссылки
 def add_genURL(id,url):
+    arr=[]
     if cursor.execute(f"SELECT * FROM users_online WHERE id = {id}").fetchone() is None:
-        print('Вы не зарегестрированы, войдите в аккаунт')
+        arr.append('Вы не зарегестрированы, войдите в аккаунт')
     else:
         addUrl=cursor.execute(f"SELECT * FROM general WHERE url = '{url}'").fetchone()
         if addUrl is None:
             shURL=get_shortURL(url)
             cursor.execute(f"INSERT INTO general (url,short,id_user) VALUES (?,?,?)", (url,shURL,id))
             conn.commit()
-            print("Ссылка добавлена в общий список")
-            print(shURL)
+            arr.append("Ссылка добавлена в общий список")
+            arr.append(shURL)
         else:
-            print("Ссылка взята из общего списока")
-            print(addUrl[2])
+            arr.append("Ссылка взята из общего списока")
+            arr.append(addUrl[2])
 
 
 # все публичные ссылки пользователя
 def allGebUrlUser(id_user):
+    arr=[]
     if cursor.execute(f"SELECT * FROM users_online WHERE id = {id}").fetchone() is None:
-        print('Вы не зарегестрированы, войдите в аккаунт')
+       arr.append('Вы не зарегестрированы, войдите в аккаунт')
     else:
         url=cursor.execute(f"SELECT * FROM general WHERE id_user = {id_user}").fetchall()
+        
         if url == []:
-            print("У вас нет публичных ссылок")
+            arr.append("У вас нет публичных ссылок")
         else:
-            print("Ваши публичные сокращенные ссылки:")
             for i in range(len(url)):
-                print(f'id - {url[i][0]} / URL - {url[i][2]}')
+                arr.append(f'id - {url[i][0]} / URL - <a href="{url[i][2]}">{url[i][2]}</a>')
+                
+    return arr
 
    
 # все публичные ссылки
 def allGebUrl():
-    if cursor.execute(f"SELECT * FROM users_online WHERE id = {id}").fetchone() is None:
-        print('Вы не зарегестрированы, войдите в аккаунт')
+    arr=[]
+    url=cursor.execute(f"SELECT * FROM general").fetchall()
+    if url == []:
+        arr.append("Нет публичных сокрашенных ссылок")
     else:
-        url=cursor.execute(f"SELECT * FROM general").fetchall()
-        if url == []:
-            print("Нет публичных сокрашенных ссылок")
-        else:
-            print("Все публичные сокращенные ссылки:")
-            for i in range(len(url)):
-                print(f'id - {url[i][0]} / URL - {url[i][2]}')
+        for i in range(len(url)):
+            arr.append([url[i][0],url[i][2]])
+    
+    return arr
 
 
 # удаление публичной ссылки пользователя
 def delGebUrl(id_user,id):
+    arr=[]
     if cursor.execute(f"SELECT * FROM users_online WHERE id = {id}").fetchone() is None:
-        print('Вы не зарегестрированы, войдите в аккаунт')
+        arr.append('Вы не зарегестрированы, войдите в аккаунт')
     else:
         url=cursor.execute(f"SELECT * FROM general WHERE id_user = {id_user} AND id = {id}").fetchone()
         if url is None:
-            print("Ошибка ввода информации")
+            arr.append("Ошибка ввода информации")
         else:
             cursor.execute(f"DELETE FROM general WHERE id={id}").fetchone()
             conn.commit()
-            print("Ссылка удалена")
-        
+            arr.append("Ссылка удалена")
+
 
 # 
 # 
@@ -154,7 +159,6 @@ def allPrUrlUser(id_user):
             print("Ваши приватные сокращенные ссылки:")
             for i in range(len(url)):
                 print(f'id - {url[i][0]} / URL - {url[i][2]}')
-        
 
 
 # удаление приватной ссылки пользователя
@@ -171,49 +175,22 @@ def delPrUrl(id_user,id):
             print("Ссылка удалена")
 
 
-# Проверка
-
-# сокращение ссылки
-# print (get_shortURL("https://www.avito.ru/chelyabinsk/tovary_dlya_kompyutera/topovyy_izognutyy_curved_monitor_samsung_fullhd_2275547029"))
-
-# Публичные
-
-# удаление
-# delGebUrl(2,3)
-
-#вывод всех публичных ссылок пользователя 
-# allGebUrlUser(1,4)
-
-# вывод всех публичных ссылок
-# allGebUrl()
-
-# добавлени ссылки
-# add_genURL("https://www.avito.ru/chelyabinsk/tovary_dlya_kompyutera/videokarta_rtx_3090_gigabyte_aorus_na_garantii_2293381009")
-    
-
-# Приватные
-
-# добавление ссылки
-# add_prURL(1,'https://www.avito.ru/chelyabinsk/tovary_dlya_kompyutera/topovyy_izognutyy_curved_monitor_samsung_fullhd_2275547029')
-
-# просмотр приватных ссылок
-# allPrUrlUser(2)
-
-# удаление ссылки
-# delPrUrl(1,3)
-
-# регистрация
-# print("Регистрация")
-# login = input("Login = ")
-# password=input("Password = ")
-# reg(log=login,pas=password)
 
 
-# вход
-# print("Вход")
-# login = input("Login = ")
-# password=input("Password = ")
-# logi(log=login,pas=password)
+app = Flask(__name__)
 
-# выход
-# exit()
+@app.route('/')
+def index():
+    urlP=allGebUrl()
+    return render_template('index.html',title="Публичные ссылки",urlAll=urlP)
+
+
+@app.route('/private')
+def private():
+    urlP=allGebUrl()
+    return render_template('private.html',title="Приватные ссылки")
+
+
+
+if __name__ == '__main__':
+    app.run()
