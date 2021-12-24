@@ -24,8 +24,14 @@
     </div>
 
     <div class="divBody">
-        <h2>Приватные ссылки</h2>
-    
+        <h2>Публичные ссылки</h2>
+        <div>
+            <!-- {{urlAll}} -->
+            {% for url in urlAll %}
+              <p>id -{{url[0]}} <a href='{{url[1]}}'>{{url[1]}}</a></p>
+            {% endfor %}
+        </div>
+        <a href=""></a>
     </div>
 
     <script src="{{url_for('static', filename='js/Vue.js')}}"></script>

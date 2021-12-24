@@ -18,15 +18,26 @@
         <div @click="light" v-if="Scr"><img src="{{ url_for('static', filename='img/light.png')}}" draggable="false"></div>
     </div>
 
-    <div class="divTop">
-        <a href="http://127.0.0.1:5000/">Публичные ссылки</a>
-        <a href="http://127.0.0.1:5000/private">Приватные ссылки</a>
+    <div class="divBody">
+        <h2>Вход</h2>
+        <span>{{info}}</span>
+            <form method="POST" action="http://localhost:5000/sub">
+              <div>
+                <label>
+                  <span>Name</span><input type="text" name="Name">
+                </label>
+                <label>
+                  <span>Password</span><input required type="password" name="password">
+                </label>
+              </div>
+              <br><br>
+                <button type="submit" style="margin-left: 41.5%">Войти</button>
+            </form>
+            <br>
+        <a href="http://127.0.0.1:5000/reg">Регистрация</a>
     </div>
 
-    <div class="divBody">
-        <h2>Приватные ссылки</h2>
     
-    </div>
 
     <script src="{{url_for('static', filename='js/Vue.js')}}"></script>
 </body>

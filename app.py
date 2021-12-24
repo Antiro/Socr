@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
 import pyshorteners
 import sqlite3
 import hashlib
@@ -22,9 +22,11 @@ def reg(log,pas):
     if cursor.execute(f"SELECT * FROM users WHERE login = '{heLog}'").fetchone() is None:
         cursor.execute(f'INSERT INTO users (login,password) VALUES (?,?)', (heLog,hePas))
         conn.commit()
-        print('Готово, вы зарегестрированы !')
+        return 1
+        # вы зарегестрированы
     else:
-        print('Данный Login занят, придумайте другой')
+        return 0
+        # Данный Login занят, придумайте другой
 
 
 # вход
@@ -33,16 +35,19 @@ def logi(log,pas):
     hePas = hashlib.md5(pas.encode()).hexdigest()
 
     if cursor.execute(f"SELECT * FROM users WHERE login = '{heLog}'").fetchone() is None:
-        print('Такого пользователея нет, зарегестрируйтесь')
+        return 0
+        # нет такого пользователя
     else:
         global id
         id = cursor.execute(f"SELECT id FROM users WHERE login = '{heLog}' AND password='{hePas}'").fetchone()[0]
         if id is None:
-            print('Неправильный логин или пароль !')
+            return 2
+            # неправильный пароль или логин
         else:
             cursor.execute(f'INSERT INTO users_online (id) VALUES ({id})')
             conn.commit()
-            print('Вы вошли!')
+            return 1 
+            # вошли
 
 
 # выход из аккаунта
@@ -176,18 +181,60 @@ def delPrUrl(id_user,id):
 
 
 
-
 app = Flask(__name__)
 
+
+# вход
 @app.route('/')
 def index():
+    return render_template('index.html',title="Вход")
+
+@app.route('/sub',methods = ['POST', 'GET'])
+def login():
+    name = request.form['Name']
+    password=request.form['password']
+
+    log=logi(name,password)
+      
+    if log == 1:
+        return redirect(url_for('pub'))
+    elif log == 0:
+        info="Нет такого ползователя"
+        return redirect(url_for('index'))
+    else:
+        info="Неправильный логин или пароль"
+        return redirect(url_for('index'))
+
+# регистрация
+@app.route('/reg')
+def regs():
+    return render_template('reg.html',title="Регистрация")
+
+@app.route('/registr',methods = ['POST', 'GET'])
+def registr():
+    name = request.form['Name']
+    password=request.form['password']
+
+    regi=reg(name,password)
+    
+    if regi == 0:
+        info="Такой Name уже занят, придумайте другой"
+        return redirect(url_for('reg'))
+    else:
+        info = "Вы зарегистрированы"
+        return redirect(url_for('index'))
+
+
+
+# публичные ссылки
+@app.route('/pub')
+def pub():
     urlP=allGebUrl()
-    return render_template('index.html',title="Публичные ссылки",urlAll=urlP)
+    return render_template('pub.html',urlAll=urlP)
 
 
 @app.route('/private')
 def private():
-    urlP=allGebUrl()
     return render_template('private.html',title="Приватные ссылки")
 
 

@@ -32,6 +32,45 @@ input{
 	outline:none;
 	font-size: 15px;
 }
+.divTop{
+    background-color: #d4d4d4;
+    max-width: 1300px;
+    min-height: 33px;
+    border-radius:0 0 10px 10px;
+	display: flex;
+    align-items: center;
+    padding: 10px;
+	margin: 0 auto 30px;
+	border: 0.5px solid rgb(175, 175, 175);
+	box-shadow: 0.4em 0.4em 10px rgba(95, 95, 95, 0.5);
+}
+.divTop >a{
+	margin-right: 15px;
+	color: #35363A;
+	font-size: 150%;
+	text-decoration: none;
+	padding-bottom: 2px;
+	font-weight: 600;
+}
+.divTop >a:hover{
+	color: #65676e;
+	font-size: 150%;
+	text-decoration: none;
+	font-weight: 600;
+}
+a{
+	color: #35363A;
+	font-size: 110%;
+	text-decoration: none;
+	font-weight: 600;
+}
+a:hover{
+	color: #65676e;
+	font-size: 110%;
+	text-decoration: none;
+	font-weight: 600;
+}
+
 .divBody{
     background-color: #d4d4d4;
     max-width: 1000px;
