@@ -70,7 +70,17 @@ a:hover{
 	text-decoration: none;
 	font-weight: 600;
 }
-
+.divURL{
+	flex-direction:row;
+	display: flex;
+}
+.divURL >div{
+	padding: 0px 30px;
+}
+.exit{
+	position:relative;
+	left: 720px;
+}
 .divBody{
     background-color: #d4d4d4;
     max-width: 1000px;
@@ -80,7 +90,7 @@ a:hover{
 	display: flex;
     align-items: center;
     padding: 40px;
-	margin: 50px auto 30px;
+	margin: 20px auto 10px;
 	border: 0.5px solid rgb(175, 175, 175);
 	box-shadow: 0.4em 0.4em 10px rgba(95, 95, 95, 0.5);
 }
@@ -96,3 +106,7 @@ a:hover{
 	padding: 5px;
 	height: 25px;
 };
+hr{
+	width: 35%;
+	color: cornsilk;
+}
