@@ -50,6 +50,14 @@
                 <p>id -{{url[0]}} <a href='{{url[1]}}'>{{url[1]}}</a></p>
                  {% endfor %}
             </div>
+            <div>
+                <h2>Удалить</h2>
+                {% for url in URLuser %}
+                <form method="POST" action="http://localhost:5000/delPub">
+                <p><button type="submit" name="id" value='{{url[0]}}' class="del">X</button></p>
+                </form>
+                {% endfor %}
+            </div>
         </div>
     </div>
 

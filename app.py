@@ -117,16 +117,15 @@ def allGebUrl():
 # удаление публичной ссылки пользователя
 def delGebUrl(id_user,id):
     arr=[]
-    if cursor.execute(f"SELECT * FROM users_online WHERE id = {id}").fetchone() is None:
-        arr.append('Вы не зарегестрированы, войдите в аккаунт')
+    url=cursor.execute(f"SELECT * FROM general WHERE id_user = {id_user} AND id = {id}").fetchone()
+    if url is None:
+        arr.append("Ошибка ввода информации")
     else:
-        url=cursor.execute(f"SELECT * FROM general WHERE id_user = {id_user} AND id = {id}").fetchone()
-        if url is None:
-            arr.append("Ошибка ввода информации")
-        else:
-            cursor.execute(f"DELETE FROM general WHERE id={id}").fetchone()
-            conn.commit()
-            arr.append("Ссылка удалена")
+        cursor.execute(f"DELETE FROM general WHERE id={id}").fetchone()
+        conn.commit()
+        arr.append("Ссылка удалена")
+
+    return arr
 
 
 # 
@@ -168,16 +167,16 @@ def allPrUrlUser(id_user):
 
 # удаление приватной ссылки пользователя
 def delPrUrl(id_user,id):
-    if cursor.execute(f"SELECT * FROM users_online WHERE id = {id}").fetchone() is None:
-        print('Вы не зарегестрированы, войдите в аккаунт')
+    arr=[]
+    url=cursor.execute(f"SELECT * FROM private WHERE id_user = {id_user} AND id = {id}").fetchone()
+    if url is None:
+        arr.append("Ошибка ввода информации")
     else:
-        url=cursor.execute(f"SELECT * FROM private WHERE id_user = '{id_user}' AND id = '{id}'").fetchone()
-        if url is None:
-            print("Ошибка ввода информации")
-        else:
-            cursor.execute(f"DELETE FROM private WHERE id={id}").fetchone()
-            conn.commit()
-            print("Ссылка удалена")
+        cursor.execute(f"DELETE FROM private WHERE id={id}").fetchone()
+        conn.commit()
+        arr.append("Ссылка удалена")
+
+    return arr
 
 
 
@@ -253,6 +252,17 @@ def pub():
         pubURLuser=allGebUrlUser(id)
         return render_template('pub.html',urlAll=urlP,URLuser=pubURLuser)
 
+# удаление публичных ссылок пользователя
+@app.route('/delPub',methods = ['POST', 'GET'])
+def delPub():
+    idURL = request.form['id']
+    global id
+    delGebUrl(id,idURL)
+    
+    urlP=allGebUrl()
+    pubURLuser=allGebUrlUser(id)
+    return render_template('pub.html',urlAll=urlP,URLuser=pubURLuser)
+
 
 # приватные ссылки
 @app.route('/private')
@@ -261,13 +271,8 @@ def private():
     if id == 0:
         return redirect(url_for('index'))
     else:
-        temp=allPrUrlUser(id)
-        # if temp == None:
-        #     prURL=['none']
-        # else:
-        prURL= temp
+        prURL= allPrUrlUser(id)
         return render_template('private.html',title="Приватные ссылки",prURL=prURL)
-
 
 
 # добавление приватной ссылки
@@ -278,6 +283,15 @@ def addPrURL():
     add_prURL(id,url)
     return redirect(url_for('private'))
 
+# удаление приватных ссылок пользователя
+@app.route('/delPr',methods = ['POST', 'GET'])
+def delPr():
+    idURL = request.form['id']
+    global id
+    delPrUrl(id,idURL)
+
+    prURL= allPrUrlUser(id)
+    return render_template('private.html',title="Приватные ссылки",prURL=prURL)
     
 if __name__ == '__main__':
     app.run()

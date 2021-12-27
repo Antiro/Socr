@@ -37,6 +37,7 @@
               </form>
               <hr>
         </div>
+        <div class="divURL">
         <div>
             <h2>Приватные ссылки</h2>
             {% if prURL == [None]%}
@@ -47,6 +48,15 @@
             {% endfor %}
             {% endif %}
         </div>
+        <div>
+            <h2>Удалить</h2>
+            {% for url in prURL %}
+            <form method="POST" action="http://localhost:5000/delPr">
+            <p><button type="submit" name="id" value='{{url[0]}}' class="del">X</button></p>
+            </form>
+            {% endfor %}
+        </div>
+    </div>
     </div>
 
     <script src="{{url_for('static', filename='js/Vue.js')}}"></script>
